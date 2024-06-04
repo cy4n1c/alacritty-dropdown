@@ -15,8 +15,9 @@
 # limitations under the License.
 
 NAME='Alacritty Dropdown'
-CMD='alacritty -T "$ALACRITTY_DROPDOWN_WINDOW_NAME" \
-    --config-file "$HOME/.alacritty-dropdown.yml"'
+CONFIGFILE="$HOME/.alacritty-dropdown.yml"
+CMD="alacritty -T ${NAME@Q} \
+    --config-file ${CONFIGFILE@Q}"
 LOCKFILE="/tmp/alacritty-dropdown-$UID.lock"
 WIDFILE="/tmp/alacritty-dropdown-$UID.wid"
 
@@ -38,7 +39,6 @@ function focus() {
 
 WID=$(wmctrl -l | grep -Po '^\S+(?=.*?'"$NAME"'$)')
 if [ -z "$WID" ]; then
-    export ALACRITTY_DROPDOWN_WINDOW_NAME="$NAME"
     flock -no "$LOCKFILE" -c "$CMD" || show
     exit $?
 fi
