@@ -16,6 +16,9 @@
 
 PREFIX?=/usr/local
 
+check:
+	shellcheck alacritty-dropdown
+
 install: alacritty-dropdown
 	install -D -m 775 alacritty-dropdown \
 		$(DESTDIR)$(PREFIX)/bin/alacritty-dropdown
