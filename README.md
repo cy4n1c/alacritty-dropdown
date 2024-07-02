@@ -57,7 +57,7 @@ columns = width / font.size / ratio
 160 = 1080 / 9 / 0.75
 ```
 
-Finally, bind your preferred key using your your desktop environment to Alacritty Dropdown.
+Finally, bind your preferred key in your desktop environment settings to Alacritty Dropdown.
 
 ## Notes
 
