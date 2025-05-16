@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2024 Cyanic
+# Copyright 2025 Cyanic
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
 # limitations under the License.
 
 NAME='Alacritty Dropdown'
-CONFIGFILE="$HOME/.alacritty-dropdown.yml"
+CONFIGFILE="$HOME/.alacritty-dropdown.toml"
+if [ ! -f "$CONFIGFILE" ]; then
+    CONFIGFILE="$HOME/.alacritty-dropdown.yml"
+fi
 CMD="alacritty -T ${NAME@Q} \
     --config-file ${CONFIGFILE@Q}"
 LOCKFILE="/tmp/alacritty-dropdown-$UID.lock"

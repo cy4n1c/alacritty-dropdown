@@ -1,0 +1,18 @@
+[font]
+size = 9
+
+[terminal.shell]
+args = ["new", "-A", "-s", "alacritty-dropdown"]
+program = "/usr/bin/tmux"
+
+[window]
+decorations = "None"
+opacity = 0.9
+
+[window.dimensions]
+columns = 160
+lines = 32
+
+[window.position]
+x = 0
+y = 0
