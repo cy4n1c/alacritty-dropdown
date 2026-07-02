@@ -15,12 +15,12 @@
 # limitations under the License.
 
 NAME='Alacritty Dropdown'
+WIDTH='100%'
+HEIGHT='75%'
 CONFIGFILE="$HOME/.alacritty-dropdown.toml"
 if [ ! -f "$CONFIGFILE" ]; then
     CONFIGFILE="$HOME/.alacritty-dropdown.yml"
 fi
-CMD="alacritty -T ${NAME@Q} \
-    --config-file ${CONFIGFILE@Q}"
 LOCKFILE="/tmp/alacritty-dropdown-$UID.lock"
 WIDFILE="/tmp/alacritty-dropdown-$UID.wid"
 
@@ -39,10 +39,23 @@ function focus() {
     xdotool set_desktop_for_window "$1" "$(xdotool get_desktop)"
     wmctrl -i -a "$1"
 }
+function resize() {
+    while [ -z "$WID" ]; do
+        WID=$(wmctrl -l | grep -Po '^\S+(?=.*?'"$NAME"'$)')
+    done
+    exec xdotool windowsize "$WID" "$WIDTH" "$HEIGHT"
+}
+function run() {
+    (timeout 10s "$0" resize &)
+    exec alacritty -T "${NAME}" --config-file "${CONFIGFILE}"
+}
+
+[ "$1" == resize ] && resize
+[ "$1" == run ] && run
 
 WID=$(wmctrl -l | grep -Po '^\S+(?=.*?'"$NAME"'$)')
 if [ -z "$WID" ]; then
-    flock -no "$LOCKFILE" -c "$CMD" || show
+    flock -no "$LOCKFILE" "$0" run || show
     exit $?
 fi
 
