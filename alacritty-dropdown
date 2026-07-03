@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2025 Cyanic
+# Copyright 2026 Cyanic
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,45 +17,63 @@
 NAME='Alacritty Dropdown'
 WIDTH='100%'
 HEIGHT='75%'
-CONFIGFILE="$HOME/.alacritty-dropdown.toml"
-if [ ! -f "$CONFIGFILE" ]; then
-    CONFIGFILE="$HOME/.alacritty-dropdown.yml"
-fi
-LOCKFILE="/tmp/alacritty-dropdown-$UID.lock"
-WIDFILE="/tmp/alacritty-dropdown-$UID.wid"
 
-function show() {
-    WFWID=$(cat "$WIDFILE" 2>/dev/null)
+CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
+CONFIG_FILE="$CONFIG_HOME/alacritty/alacritty-dropdown.toml"
+
+# Fall back to deprecated config file locations
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    CONFIG_FILE="$HOME/.alacritty-dropdown.toml"
+
+    CONFIG_FILE_YAML="$HOME/.alacritty-dropdown.yml"
+    if [[ ! -f "$CONFIG_FILE" && -f "$CONFIG_FILE_YAML" ]]; then
+        CONFIG_FILE="$CONFIG_FILE_YAML"
+    fi
+fi
+
+CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
+CACHE_DIR="$CACHE_HOME/alacritty-dropdown"
+WID_FILE="$CACHE_DIR/wid"
+
+show() {
+    WFWID=$(cat "$WID_FILE" 2>/dev/null)
     xdotool windowmap "$WFWID"
 }
-function hide() {
-    echo "$1" > "$WIDFILE"
+
+hide() {
+    echo "$1" > "$WID_FILE"
     xdotool windowunmap "$1"
 }
-function focused() {
+
+focused() {
     xprop -id "$1" | grep _NET_WM_STATE_FOCUSED >/dev/null
 }
-function focus() {
+
+focus() {
     xdotool set_desktop_for_window "$1" "$(xdotool get_desktop)"
     wmctrl -i -a "$1"
 }
-function resize() {
-    while [ -z "$WID" ]; do
-        WID=$(wmctrl -l | grep -Po '^\S+(?=.*?'"$NAME"'$)')
+
+getwid() {
+    wmctrl -l | grep -Po '^\S+(?=.*?'"$NAME"'$)'
+}
+
+if [[ "$1" == resize ]]; then
+    while [[ -z "$WID" ]]; do
+        WID=$(getwid)
     done
     exec xdotool windowsize "$WID" "$WIDTH" "$HEIGHT"
-}
-function run() {
+fi
+
+if [[ "$1" == run ]]; then
     (timeout 10s "$0" resize &)
-    exec alacritty -T "${NAME}" --config-file "${CONFIGFILE}"
-}
+    exec alacritty -T "${NAME}" --config-file "${CONFIG_FILE}"
+fi
 
-[ "$1" == resize ] && resize
-[ "$1" == run ] && run
-
-WID=$(wmctrl -l | grep -Po '^\S+(?=.*?'"$NAME"'$)')
-if [ -z "$WID" ]; then
-    flock -no "$LOCKFILE" "$0" run || show
+WID="$(getwid)"
+if [[ -z "$WID" ]]; then
+    mkdir -p "$CACHE_DIR"
+    flock -no "$CACHE_DIR/lock" "$0" run || show
     exit $?
 fi
 

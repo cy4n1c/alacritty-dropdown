@@ -40,12 +40,14 @@ There is an example configuration file provided, which should be adjusted to
 your preferences. As the program is limited to a single instance, the provided
 configuration uses a dedicated `tmux` session to add support for tabs. The
 program assumes the configuration file is located at
-`$HOME/.alacritty-dropdown.toml`. If you want to store the configuration in a
-different location, you should make a change to the source code.
+`$XDG_CONFIG_HOME/alacritty/alacritty-dropdown.toml`. If you want to store the
+configuration in a different location, you should make a change to the source
+code.
 
 ```shell
 # Use the example configuration file
-cp example.alacritty-dropdown.toml ~/.alacritty-dropdown.toml
+mkdir -p "$XDG_CONFIG_HOME/alacritty"
+cp example.alacritty-dropdown.toml "$XDG_CONFIG_HOME/alacritty/alacritty-dropdown.toml"
 ```
 
 Finally, bind your preferred key in your desktop environment settings to
