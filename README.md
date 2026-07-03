@@ -18,11 +18,11 @@ X Window System.
 
 This program requires external executables to be available on the system.
 Ensure the following commands are available before running the program:
-alacritty, wmctrl, xdotool, xprop, flock, grep.
+alacritty, wmctrl, xdotool, xprop, flock, grep, timeout.
 
 ```shell
 # Install dependencies on Debian based systems
-apt install alacritty wmctrl xdotool x11-utils util-linux grep
+apt install alacritty wmctrl xdotool x11-utils
 ```
 
 ### Installation
